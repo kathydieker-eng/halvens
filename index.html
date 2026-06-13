@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Half-Half Happy</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ══════════ SCREEN: WELCOME ══════════ -->
+<div id="screen-welcome" class="screen active">
+  <div class="welcome-wrap">
+    <div class="welcome-left">
+      <div class="brand">half-half happy</div>
+      <h1 class="hero-title">Fair tasks.<br/><em>Finally.</em></h1>
+      <p class="hero-sub">A planner that knows who does what, respects both schedules, and actually keeps things fair — with a fairness algorithm backed by research.</p>
+      <div class="hero-pills">
+        <span class="hero-pill">⚖️ EF1-fair algorithm</span>
+        <span class="hero-pill">🧠 Cognitive load tracking</span>
+        <span class="hero-pill">🤖 AI-powered chat</span>
+        <span class="hero-pill">💛 Appreciation built in</span>
+      </div>
+    </div>
+    <div class="welcome-right">
+      <div class="setup-box">
+        <p class="setup-label">Let's get started</p>
+        <div class="field-group">
+          <label class="field-label">Partner 1</label>
+          <input id="inp-name1" class="text-input" type="text" placeholder="Your name..." maxlength="24" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Partner 2</label>
+          <input id="inp-name2" class="text-input" type="text" placeholder="Their name..." maxlength="24" />
+        </div>
+        <button class="cta-btn" onclick="goToIntake()">Set up together →</button>
+        <button class="ghost-btn" onclick="tryDemo()">Try demo first</button>
+        <p class="returning" onclick="loadSession()">Already set up? Continue →</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SCREEN: INTAKE ══════════ -->
+<div id="screen-intake" class="screen">
+  <div class="intake-shell">
+    <div class="intake-topbar">
+      <span class="brand small">half-half happy</span>
+      <div class="intake-progress">
+        <div id="intake-progress-fill" class="intake-progress-fill"></div>
+      </div>
+      <span id="intake-step-label" class="intake-step-label">Step 1 of 4</span>
+    </div>
+
+    <div class="intake-body">
+
+      <!-- STEP 1: HOME -->
+      <div class="intake-step active" id="step-1">
+        <div class="step-icon">🏠</div>
+        <h2 class="step-title">Your home</h2>
+        <p class="step-sub">This lets us suggest the right tasks and estimate cleaning load.</p>
+        <div class="intake-grid">
+          <div class="field-group">
+            <label class="field-label">Home type</label>
+            <div class="chip-group" id="chips-hometype">
+              <button class="chip" onclick="selectChip(this,'hometype','studio')">Studio</button>
+              <button class="chip" onclick="selectChip(this,'hometype','apartment')">Apartment</button>
+              <button class="chip" onclick="selectChip(this,'hometype','house')">House</button>
+            </div>
+          </div>
+          <div class="intake-row-2">
+            <div class="field-group">
+              <label class="field-label">Bedrooms</label>
+              <div class="chip-group" id="chips-bedrooms">
+                <button class="chip" onclick="selectChip(this,'bedrooms','1')">1</button>
+                <button class="chip" onclick="selectChip(this,'bedrooms','2')">2</button>
+                <button class="chip" onclick="selectChip(this,'bedrooms','3')">3</button>
+                <button class="chip" onclick="selectChip(this,'bedrooms','4+')">4+</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Bathrooms</label>
+              <div class="chip-group" id="chips-bathrooms">
+                <button class="chip" onclick="selectChip(this,'bathrooms','1')">1</button>
+                <button class="chip" onclick="selectChip(this,'bathrooms','2')">2</button>
+                <button class="chip" onclick="selectChip(this,'bathrooms','3+')">3+</button>
+              </div>
+            </div>
+          </div>
+          <div class="intake-row-2">
+            <div class="field-group">
+              <label class="field-label">Pets?</label>
+              <div class="chip-group" id="chips-pets">
+                <button class="chip" onclick="selectChip(this,'pets','none')">None</button>
+                <button class="chip" onclick="selectChip(this,'pets','dog')">Dog 🐕</button>
+                <button class="chip" onclick="selectChip(this,'pets','cat')">Cat 🐈</button>
+                <button class="chip" onclick="selectChip(this,'pets','other')">Other</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Garden / outdoor?</label>
+              <div class="chip-group" id="chips-garden">
+                <button class="chip" onclick="selectChip(this,'garden','no')">No</button>
+                <button class="chip" onclick="selectChip(this,'garden','balcony')">Balcony</button>
+                <button class="chip" onclick="selectChip(this,'garden','yes')">Yes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: SCHEDULES (hours grid) -->
+      <div class="intake-step" id="step-2">
+        <div class="step-icon">🕐</div>
+        <h2 class="step-title">Weekly availability</h2>
+        <p class="step-sub">How many hours does each of you have available per day? Set 0 for days you're not free. This is used to cap how many tasks each person gets and to schedule on the right days.</p>
+        <div class="avail-grid-wrap">
+          <div class="avail-grid">
+            <div class="avail-corner"></div>
+            <div class="avail-day-header">Mon</div>
+            <div class="avail-day-header">Tue</div>
+            <div class="avail-day-header">Wed</div>
+            <div class="avail-day-header">Thu</div>
+            <div class="avail-day-header">Fri</div>
+            <div class="avail-day-header">Sat</div>
+            <div class="avail-day-header">Sun</div>
+            <div class="avail-person-label p1" id="avail-name1"></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p1-Mon" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p1-Tue" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p1-Wed" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p1-Thu" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p1-Fri" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p1-Sat" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option>1</option><option>1.5</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p1-Sun" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option>1</option><option>1.5</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-person-label p2" id="avail-name2"></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p2-Mon" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p2-Tue" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p2-Wed" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p2-Thu" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p2-Fri" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p2-Sat" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option>1</option><option>1.5</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+            <div class="avail-cell"><select class="avail-select" id="avail-p2-Sun" onchange="updateAvailSummary()"><option>0</option><option>0.5</option><option>1</option><option>1.5</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+          </div>
+          <div id="avail-summary" class="avail-summary"></div>
+        </div>
+        <div class="intake-row-2" style="margin-top:20px">
+          <div class="field-group">
+            <label class="field-label" id="commit-label1">Fixed commitments (optional)</label>
+            <input class="text-input small" type="text" id="inp-commitments1" placeholder="e.g. yoga Mon evenings, works late Thu..." />
+          </div>
+          <div class="field-group">
+            <label class="field-label" id="commit-label2">Fixed commitments (optional)</label>
+            <input class="text-input small" type="text" id="inp-commitments2" placeholder="e.g. gym Tue mornings, works from home Fri..." />
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: PREFERENCES -->
+      <div class="intake-step" id="step-3">
+        <div class="step-icon">💬</div>
+        <h2 class="step-title">Preferences</h2>
+        <p class="step-sub">The algorithm uses this to give people tasks they don't mind — and protect against the ones they hate. Be honest.</p>
+        <div class="intake-row-2 prefs-row">
+          <div>
+            <div class="person-prefs-header p1" id="prefs-name1"></div>
+            <div class="field-group">
+              <label class="field-label">Enjoys or doesn't mind</label>
+              <div class="chip-group multi" id="chips-likes1">
+                <button class="chip multi" onclick="toggleChip(this,'likes1','Cooking')">Cooking</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes1','Cleaning')">Cleaning</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes1','Groceries')">Groceries</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes1','Laundry')">Laundry</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes1','Tidying')">Tidying</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes1','Admin')">Admin</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes1','Garden')">Garden</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes1','DIY')">DIY</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Dislikes or avoids</label>
+              <div class="chip-group multi" id="chips-dislikes1">
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes1','Cooking')">Cooking</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes1','Cleaning')">Cleaning</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes1','Groceries')">Groceries</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes1','Laundry')">Laundry</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes1','Tidying')">Tidying</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes1','Admin')">Admin</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes1','Garden')">Garden</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes1','DIY')">DIY</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Particularly good at (optional)</label>
+              <input class="text-input small" type="text" id="inp-skills1" placeholder="e.g. fast cleaner, good at cooking..." />
+            </div>
+          </div>
+          <div>
+            <div class="person-prefs-header p2" id="prefs-name2"></div>
+            <div class="field-group">
+              <label class="field-label">Enjoys or doesn't mind</label>
+              <div class="chip-group multi" id="chips-likes2">
+                <button class="chip multi" onclick="toggleChip(this,'likes2','Cooking')">Cooking</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes2','Cleaning')">Cleaning</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes2','Groceries')">Groceries</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes2','Laundry')">Laundry</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes2','Tidying')">Tidying</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes2','Admin')">Admin</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes2','Garden')">Garden</button>
+                <button class="chip multi" onclick="toggleChip(this,'likes2','DIY')">DIY</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Dislikes or avoids</label>
+              <div class="chip-group multi" id="chips-dislikes2">
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes2','Cooking')">Cooking</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes2','Cleaning')">Cleaning</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes2','Groceries')">Groceries</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes2','Laundry')">Laundry</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes2','Tidying')">Tidying</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes2','Admin')">Admin</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes2','Garden')">Garden</button>
+                <button class="chip multi dislike" onclick="toggleChip(this,'dislikes2','DIY')">DIY</button>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Particularly good at (optional)</label>
+              <input class="text-input small" type="text" id="inp-skills2" placeholder="e.g. does all admin, good at groceries..." />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: TASK PICKER + BALANCE -->
+      <div class="intake-step" id="step-4">
+        <div class="step-icon">✅</div>
+        <h2 class="step-title">Your recurring tasks</h2>
+        <p class="step-sub">Select what needs to happen in your household. Add anything missing at the bottom. Also — honestly — who has been doing more lately?</p>
+
+        <div class="task-picker-tabs">
+          <button class="tp-tab active" onclick="switchTaskTab('daily',this)">Daily</button>
+          <button class="tp-tab" onclick="switchTaskTab('weekly',this)">Weekly</button>
+          <button class="tp-tab" onclick="switchTaskTab('monthly',this)">Monthly</button>
+        </div>
+
+        <!-- Daily tasks -->
+        <div id="tp-daily" class="task-picker-group hidden">
+          <div class="tp-row">
+            <div class="tp-category">
+              <p class="tp-cat-label">🍳 Cooking &amp; kitchen</p>
+              <div class="tp-chips">
+                <button class="tp-chip" data-name="Cook dinner" data-effort="30" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Cook dinner <span class="tp-effort">30m</span></button>
+                <button class="tp-chip" data-name="Prepare lunch" data-effort="15" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Prepare lunch <span class="tp-effort">15m</span></button>
+                <button class="tp-chip" data-name="Make breakfast" data-effort="10" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Make breakfast <span class="tp-effort">10m</span></button>
+                <button class="tp-chip" data-name="Wash up after dinner" data-effort="15" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Wash up after dinner <span class="tp-effort">15m</span></button>
+                <button class="tp-chip" data-name="Pack lunches for next day" data-effort="10" data-recur="daily" data-type="cognitive" onclick="toggleTaskPick(this)">Pack lunches <span class="tp-effort">10m</span></button>
+              </div>
+            </div>
+            <div class="tp-category">
+              <p class="tp-cat-label">🏠 Home &amp; tidying</p>
+              <div class="tp-chips">
+                <button class="tp-chip" data-name="Tidy up before bed" data-effort="10" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Tidy up before bed <span class="tp-effort">10m</span></button>
+                <button class="tp-chip" data-name="Wipe kitchen surfaces" data-effort="5" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Wipe kitchen surfaces <span class="tp-effort">5m</span></button>
+                <button class="tp-chip" data-name="Make bed" data-effort="5" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Make bed <span class="tp-effort">5m</span></button>
+                <button class="tp-chip" data-name="Run dishwasher / empty dishwasher" data-effort="10" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Empty dishwasher <span class="tp-effort">10m</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="tp-row">
+            <div class="tp-category">
+              <p class="tp-cat-label">🐾 Pet care</p>
+              <div class="tp-chips">
+                <button class="tp-chip" data-name="Feed pets" data-effort="5" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Feed pets <span class="tp-effort">5m</span></button>
+                <button class="tp-chip" data-name="Walk dog" data-effort="30" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Walk dog <span class="tp-effort">30m</span></button>
+                <button class="tp-chip" data-name="Clean litter box" data-effort="5" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Clean litter box <span class="tp-effort">5m</span></button>
+              </div>
+            </div>
+            <div class="tp-category">
+              <p class="tp-cat-label">🧠 Cognitive / planning</p>
+              <div class="tp-chips">
+                <button class="tp-chip" data-name="Check tomorrow's schedule" data-effort="5" data-recur="daily" data-type="cognitive" onclick="toggleTaskPick(this)">Check tomorrow's schedule <span class="tp-effort">5m</span></button>
+                <button class="tp-chip" data-name="Reply to household messages" data-effort="10" data-recur="daily" data-type="cognitive" onclick="toggleTaskPick(this)">Reply to household messages <span class="tp-effort">10m</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+                <div id="tp-weekly" class="task-picker-group hidden">
+          <div class="tp-row">
+            <div class="tp-category">
+              <p class="tp-cat-label">🍳 Food & cooking</p>
+              <div class="tp-chips">
+                <button class="tp-chip" data-name="Cook dinner" data-effort="30" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Cook dinner <span class="tp-effort">30m</span></button>
+                <button class="tp-chip" data-name="Grocery shopping" data-effort="45" data-recur="weekly" data-type="physical" onclick="toggleTaskPick(this)">Grocery shopping <span class="tp-effort">45m</span></button>
+                <button class="tp-chip" data-name="Meal planning" data-effort="20" data-recur="weekly" data-type="cognitive" onclick="toggleTaskPick(this)">Meal planning <span class="tp-effort">20m</span></button>
+                <button class="tp-chip" data-name="Wash up / dishwasher" data-effort="15" data-recur="daily" data-type="physical" onclick="toggleTaskPick(this)">Wash up <span class="tp-effort">15m</span></button>
+                <button class="tp-chip" data-name="Wipe kitchen surfaces" data-effort="10" data-recur="weekly" data-type="physical" onclick="toggleTaskPick(this)">Wipe kitchen <span class="tp-effort">10m</span></button>
+              </div>
+            </div>
+            <div class="tp-category">
+              <p class="tp-cat-label">🧹 Cleaning</p>
+              <div class="tp-chips">
+                <button class="tp-chip" data-name="Hoover floors" data-effort="25" data-recur="weekly" data-type="physical" onclick="toggleTaskPick(this)">Hoover floors <span class="tp-effort">25m</span></button>
+                <button class="tp-chip" data-name="Clean bathroom" data-effort="40" data-recur="weekly" data-type="physical" onclick="toggleTaskPick(this)">Clean bathroom <span class="tp-effort">40m</span></button>
+                <button class="tp-chip" data-name="Clean toilet" data-effort="15" data-recur="weekly" data-type="physical" onclick="toggleTaskPick(this)">Clean toilet <span class="tp-effort">15m</span></button>
+                <button class="tp-chip" data-name="Tidy living room" data-effort="20" data-recur="weekly" data-type="physical" onclick="toggleTaskPick(this)">Tidy living room <span class="tp-effort">20m</span></button>
+                <button class="tp-chip" data-name="Take out bins" data-effort="10" data-recur="weekly" data-type="physical" onclick="toggleTaskPick(this)">Take out bins <span class="tp-effort">10m</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="tp-row">
+            <div class="tp-category">
+              <p class="tp-cat-label">👕 Laundry</p>
+              <div class="tp-chips">
+                <button class="tp-chip" data-name="Do laundry" data-effort="20" data-recur="weekly" data-type="physical" onclick="toggleTaskPick(this)">Do laundry <span class="tp-effort">20m</span></button>
+                <button class="tp-chip" data-name="Fold and put away laundry" data-effort="20" data-recur="weekly" data-type="physical" onclick="toggleTaskPick(this)">Fold &amp; put away <span class="tp-effort">20m</span></button>
+                <button class="tp-chip" data-name="Change bed sheets" data-effort="20" data-recur="weekly" data-type="physical" onclick="toggleTaskPick(this)">Change bed sheets <span class="tp-effort">20m</span></button>
+              </div>
+            </div>
+            <div class="tp-category">
+              <p class="tp-cat-label">🧠 Admin &amp; cognitive</p>
+              <div class="tp-chips">
+                <button class="tp-chip" data-name="Pay bills" data-effort="20" data-recur="weekly" data-type="cognitive" onclick="toggleTaskPick(this)">Pay bills <span class="tp-effort">20m</span></button>
+                <button class="tp-chip" data-name="Sort post and messages" data-effort="10" data-recur="weekly" data-type="cognitive" onclick="toggleTaskPick(this)">Sort post <span class="tp-effort">10m</span></button>
+                <button class="tp-chip" data-name="Track household budget" data-effort="20" data-recur="weekly" data-type="cognitive" onclick="toggleTaskPick(this)">Track budget <span class="tp-effort">20m</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tp-monthly" class="task-picker-group hidden">
+          <div class="tp-row">
+            <div class="tp-category">
+              <p class="tp-cat-label">🧽 Deep cleaning</p>
+              <div class="tp-chips">
+                <button class="tp-chip" data-name="Deep clean oven" data-effort="60" data-recur="monthly" data-type="physical" onclick="toggleTaskPick(this)">Deep clean oven <span class="tp-effort">60m</span></button>
+                <button class="tp-chip" data-name="Clean fridge" data-effort="30" data-recur="monthly" data-type="physical" onclick="toggleTaskPick(this)">Clean fridge <span class="tp-effort">30m</span></button>
+                <button class="tp-chip" data-name="Clean windows inside" data-effort="30" data-recur="monthly" data-type="physical" onclick="toggleTaskPick(this)">Clean windows <span class="tp-effort">30m</span></button>
+                <button class="tp-chip" data-name="Vacuum under furniture" data-effort="30" data-recur="monthly" data-type="physical" onclick="toggleTaskPick(this)">Vacuum under furniture <span class="tp-effort">30m</span></button>
+              </div>
+            </div>
+            <div class="tp-category">
+              <p class="tp-cat-label">🧠 Admin</p>
+              <div class="tp-chips">
+                <button class="tp-chip" data-name="Review household finances" data-effort="30" data-recur="monthly" data-type="cognitive" onclick="toggleTaskPick(this)">Review finances <span class="tp-effort">30m</span></button>
+                <button class="tp-chip" data-name="Restock household supplies" data-effort="20" data-recur="monthly" data-type="cognitive" onclick="toggleTaskPick(this)">Restock supplies <span class="tp-effort">20m</span></button>
+                <button class="tp-chip" data-name="Schedule appointments" data-effort="20" data-recur="monthly" data-type="cognitive" onclick="toggleTaskPick(this)">Schedule appointments <span class="tp-effort">20m</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tp-footer">
+          <span id="tp-count" class="tp-count">0 tasks selected</span>
+        </div>
+
+        <!-- Balance check -->
+        <div class="balance-section">
+          <label class="field-label">Right now, who has been doing more? (be honest)</label>
+          <div class="chip-group" id="chips-balance">
+            <button class="chip" id="balance-p1-chip" onclick="selectChip(this,'balance','p1')"></button>
+            <button class="chip" id="balance-p2-chip" onclick="selectChip(this,'balance','p2')"></button>
+            <button class="chip" onclick="selectChip(this,'balance','equal')">About equal</button>
+          </div>
+          <div class="field-group" style="margin-top:12px">
+            <input class="text-input small" type="text" id="inp-balance-note" placeholder="Any context? (optional) e.g. one of us was sick last month..." />
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5: GENERATING -->
+      <div class="intake-step" id="step-5">
+        <div class="step-icon generating-icon" id="gen-icon">✦</div>
+        <h2 class="step-title" id="gen-title">Building your plan…</h2>
+        <p class="step-sub" id="gen-sub">Reading your household profile and generating a personalised task list.</p>
+        <div class="gen-progress"><div id="gen-bar" class="gen-bar"></div></div>
+        <p class="gen-status" id="gen-status">Analysing your home…</p>
+      </div>
+
+    </div><!-- /intake-body -->
+
+    <div class="intake-nav">
+      <button class="ghost-btn" id="btn-back" onclick="intakeBack()" style="visibility:hidden">← Back</button>
+      <button class="cta-btn" id="btn-next" onclick="intakeNext()">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SCREEN: APP ══════════ -->
+<div id="screen-app" class="screen">
+
+  <!-- TOP BAR -->
+  <nav class="topbar">
+    <span class="brand small">half-half happy</span>
+    <div class="fairness-wrap">
+      <span id="fb-name1" class="fb-name left"></span>
+      <div class="fairness-bars">
+        <!-- Minutes bar -->
+        <div class="fb-row">
+          <span class="fb-label">time</span>
+          <div class="fairness-track">
+            <div id="fairness-fill" class="fairness-fill"></div>
+            <div class="fairness-mid"></div>
+          </div>
+        </div>
+        <!-- Cognitive bar -->
+        <div class="fb-row">
+          <span class="fb-label">mental</span>
+          <div class="fairness-track">
+            <div id="cognitive-fill" class="fairness-fill cog-fill"></div>
+            <div class="fairness-mid"></div>
+          </div>
+        </div>
+      </div>
+      <span id="fb-name2" class="fb-name right"></span>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="showAddTask()" title="Add task">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <div class="export-wrap" id="export-wrap">
+        <button class="icon-btn" onclick="toggleExportMenu()" title="Export">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <div class="export-menu hidden" id="export-menu">
+          <p class="export-menu-title">Export &amp; Reminders</p>
+          <button class="export-item" onclick="exportICS('p1')">📅 <span id="export-p1-label">Export tasks</span></button>
+          <button class="export-item" onclick="exportICS('p2')">📅 <span id="export-p2-label">Export tasks</span></button>
+          <div class="export-divider"></div>
+          <button class="export-item" onclick="setupNotifications()" id="notif-btn">🔔 <span id="notif-label">Enable weekly reminders</span></button>
+        </div>
+      </div>
+      <button class="icon-btn" onclick="resetAll()" title="Reset">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div class="app-grid">
+
+    <!-- TASK BOARD -->
+    <section class="board-col">
+      <div class="col-header">
+        <h2 class="col-title">Task board</h2>
+        <div class="view-tabs">
+          <button class="view-tab active" onclick="setView('week')" id="tab-week">This week</button>
+          <button class="view-tab" onclick="setView('month')" id="tab-month">All tasks</button>
+        </div>
+      </div>
+
+      <!-- Weekly availability banner -->
+      <div id="weekly-banner" class="weekly-banner hidden">
+        <div class="wb-header">
+          <span class="wb-title">🗓 New week — update availability</span>
+          <span class="wb-sub" id="wb-week-label"></span>
+        </div>
+        <div class="wb-persons">
+          <div class="wb-person">
+            <p class="wb-name p1" id="wb-name1"></p>
+            <div class="wb-days" id="wb-days1">
+              <button class="wb-day" data-day="Mon" data-person="1" onclick="toggleWbDay(this)">Mon</button>
+              <button class="wb-day" data-day="Tue" data-person="1" onclick="toggleWbDay(this)">Tue</button>
+              <button class="wb-day" data-day="Wed" data-person="1" onclick="toggleWbDay(this)">Wed</button>
+              <button class="wb-day" data-day="Thu" data-person="1" onclick="toggleWbDay(this)">Thu</button>
+              <button class="wb-day" data-day="Fri" data-person="1" onclick="toggleWbDay(this)">Fri</button>
+              <button class="wb-day" data-day="Sat" data-person="1" onclick="toggleWbDay(this)">Sat</button>
+              <button class="wb-day" data-day="Sun" data-person="1" onclick="toggleWbDay(this)">Sun</button>
+            </div>
+          </div>
+          <div class="wb-person">
+            <p class="wb-name p2" id="wb-name2"></p>
+            <div class="wb-days" id="wb-days2">
+              <button class="wb-day" data-day="Mon" data-person="2" onclick="toggleWbDay(this)">Mon</button>
+              <button class="wb-day" data-day="Tue" data-person="2" onclick="toggleWbDay(this)">Tue</button>
+              <button class="wb-day" data-day="Wed" data-person="2" onclick="toggleWbDay(this)">Wed</button>
+              <button class="wb-day" data-day="Thu" data-person="2" onclick="toggleWbDay(this)">Thu</button>
+              <button class="wb-day" data-day="Fri" data-person="2" onclick="toggleWbDay(this)">Fri</button>
+              <button class="wb-day" data-day="Sat" data-person="2" onclick="toggleWbDay(this)">Sat</button>
+              <button class="wb-day" data-day="Sun" data-person="2" onclick="toggleWbDay(this)">Sun</button>
+            </div>
+          </div>
+        </div>
+        <div class="wb-footer">
+          <button class="wb-confirm-btn" onclick="confirmWeeklyAvailability()">Confirm week →</button>
+        </div>
+      </div>
+
+      <div class="lane" id="lane-p1">
+        <div class="lane-header">
+          <span id="lane-name1" class="lane-name p1"></span>
+          <div class="lane-stats">
+            <span id="lane-score1" class="lane-score"></span>
+            <span id="lane-cog1" class="lane-cog-badge"></span>
+          </div>
+        </div>
+        <div id="tasks-p1" class="task-list"></div>
+      </div>
+
+      <div class="lane" id="lane-p2">
+        <div class="lane-header">
+          <span id="lane-name2" class="lane-name p2"></span>
+          <div class="lane-stats">
+            <span id="lane-score2" class="lane-score"></span>
+            <span id="lane-cog2" class="lane-cog-badge"></span>
+          </div>
+        </div>
+        <div id="tasks-p2" class="task-list"></div>
+      </div>
+
+      <div class="lane unassigned-lane">
+        <div class="lane-header">
+          <span class="lane-name muted">Unassigned</span>
+          <button class="assign-all-btn" onclick="requestAssignAll()">Assign fairly →</button>
+        </div>
+        <div id="tasks-unassigned" class="task-list"></div>
+      </div>
+    </section>
+
+    <!-- CHAT -->
+    <section class="chat-col">
+      <div class="col-header">
+        <h2 class="col-title">Chat</h2>
+        <span class="col-hint">Describe tasks, ask questions, negotiate</span>
+      </div>
+      <div id="chat-feed" class="chat-feed"></div>
+      <div class="chat-compose">
+        <button class="mic-btn" id="mic-btn" onclick="toggleMic()" title="Speak">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+        <textarea id="chat-input" class="chat-input" placeholder="e.g. Can you swap the cooking to Quinten this week?" rows="1"
+          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- MODAL: ADD / EDIT TASK -->
+<div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <h3 class="modal-title" id="modal-title">Add task</h3>
+    <div class="field-group">
+      <label class="field-label">Task name</label>
+      <input id="m-task-name" class="text-input" type="text" placeholder="e.g. Cook dinner" />
+    </div>
+    <div class="modal-row">
+      <div class="field-group">
+        <label class="field-label">Effort <span class="hint">(minutes)</span></label>
+        <input id="m-effort" class="text-input small" type="number" min="5" max="300" value="30" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Recurrence</label>
+        <select id="m-recur" class="text-input small">
+          <option value="once">Once</option>
+          <option value="daily">Daily</option>
+          <option value="weekly" selected>Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Assign to</label>
+      <div class="assign-btns">
+        <button class="assign-btn" id="ab-p1" onclick="setAssignee('p1')"></button>
+        <button class="assign-btn" id="ab-p2" onclick="setAssignee('p2')"></button>
+        <button class="assign-btn active" id="ab-none" onclick="setAssignee('none')">Unassigned</button>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Type</label>
+      <div class="assign-btns">
+        <button class="assign-btn active" id="tb-physical" onclick="setType('physical')">Physical</button>
+        <button class="assign-btn" id="tb-cognitive" onclick="setType('cognitive')">Cognitive</button>
+        <button class="assign-btn" id="tb-both" onclick="setType('both')">Both</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="ghost-btn small" onclick="hideModal()">Cancel</button>
+      <button class="cta-btn small" onclick="saveTask()">Save task</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ASSIGN CONFIRMATION (both-thumbs-up) -->
+<div id="assign-modal" class="modal-overlay hidden" onclick="closeAssignModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <h3 class="modal-title">Review assignment</h3>
+    <p style="font-size:14px;color:#5A5650;margin-bottom:18px;line-height:1.6" id="assign-preview"></p>
+    <div class="assign-confirm-row">
+      <div class="assign-confirm-person">
+        <p class="assign-confirm-name" id="ac-name1"></p>
+        <button class="assign-confirm-btn" id="ac-btn1" onclick="confirmAssignment(1)">👍 Looks good</button>
+      </div>
+      <div class="assign-confirm-person">
+        <p class="assign-confirm-name" id="ac-name2"></p>
+        <button class="assign-confirm-btn" id="ac-btn2" onclick="confirmAssignment(2)">👍 Looks good</button>
+      </div>
+    </div>
+    <p id="assign-confirm-status" class="assign-confirm-status"></p>
+    <button class="ghost-btn small" onclick="closeAssignModal()" style="margin-top:14px;width:100%">Cancel</button>
+  </div>
+</div>
+
+<!-- MODAL: APPRECIATION PROMPT -->
+<div id="apprec-modal" class="modal-overlay hidden" onclick="closeApprecModal(event)">
+  <div class="modal-box apprec-box" onclick="event.stopPropagation()">
+    <div class="apprec-icon">💛</div>
+    <h3 class="apprec-title" id="apprec-title"></h3>
+    <p class="apprec-sub" id="apprec-sub"></p>
+    <div class="apprec-btns">
+      <button class="apprec-btn" onclick="sendAppreciation('🙌')">🙌 Nice one!</button>
+      <button class="apprec-btn" onclick="sendAppreciation('💛')">💛 Thank you!</button>
+      <button class="apprec-btn" onclick="sendAppreciation('🔥')">🔥 Crushing it!</button>
+      <button class="apprec-btn" onclick="sendAppreciation('😍')">😍 You legend!</button>
+    </div>
+    <button class="ghost-btn small" onclick="closeApprecModal()" style="margin-top:12px;width:100%">Skip</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
